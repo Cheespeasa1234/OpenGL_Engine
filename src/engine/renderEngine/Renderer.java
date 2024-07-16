@@ -1,4 +1,4 @@
-package renderEngine;
+package engine.renderEngine;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -7,10 +7,10 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 
-import entities.Entity;
-import models.RawModel;
-import models.TexturedModel;
-import shaders.StaticShader;
+import engine.entities.Entity;
+import engine.models.RawModel;
+import engine.models.TexturedModel;
+import engine.shaders.StaticShader;
 
 public class Renderer {
 	
@@ -30,7 +30,7 @@ public class Renderer {
 	public void prepare() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(0.2f, 0.7f, 0.1f, 1);
+		GL11.glClearColor(0f, 0f, 0f, 1);
 	}
 	
 	public void render(Entity entity, StaticShader shader) {
@@ -39,6 +39,7 @@ public class Renderer {
 		GL30.glBindVertexArray(rawModel.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
+		GL20.glEnableVertexAttribArray(2);
 		Matrix4f transformationMatrix = entity.getTransformationMatrix();
 		shader.loadTransformationMatrix(transformationMatrix);
 		
@@ -47,6 +48,7 @@ public class Renderer {
 		GL11.glDrawElements(GL11.GL_TRIANGLES, rawModel.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 		GL20.glDisableVertexAttribArray(0);
 		GL20.glDisableVertexAttribArray(1);
+		GL20.glDisableVertexAttribArray(2);
 		GL30.glBindVertexArray(0);
 	}
 	

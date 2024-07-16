@@ -1,9 +1,9 @@
-package toolbox;
+package util;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import entities.Camera;
+import engine.entities.Camera;
 
 public class MathUtils {
 	

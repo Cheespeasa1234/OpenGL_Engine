@@ -1,6 +1,6 @@
-package models;
+package engine.models;
 
-import textures.ModelTexture;
+import engine.textures.ModelTexture;
 
 public class TexturedModel {
 	private RawModel rawModel;

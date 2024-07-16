@@ -1,4 +1,4 @@
-package textures;
+package engine.textures;
 
 public class ModelTexture {
 	

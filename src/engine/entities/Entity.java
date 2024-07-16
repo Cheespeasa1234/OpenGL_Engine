@@ -1,10 +1,10 @@
-package entities;
+package engine.entities;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import models.TexturedModel;
-import toolbox.MathUtils;
+import engine.models.TexturedModel;
+import util.MathUtils;
 
 public class Entity {
 	

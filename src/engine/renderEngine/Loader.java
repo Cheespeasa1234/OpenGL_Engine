@@ -1,4 +1,4 @@
-package renderEngine;
+package engine.renderEngine;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,7 +16,7 @@ import org.lwjgl.opengl.GL30;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 
-import models.RawModel;
+import engine.models.RawModel;
 
 public class Loader {
 
@@ -24,11 +24,12 @@ public class Loader {
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
 	
-	public RawModel loadToVAO(float[] positions, float[] textureCoords, int[] indices) {
+	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
 		int vaoID = createVAO();
 		bindIndicesBuffer(indices);
 		storeDataInAttributeList(0, 3, positions);
 		storeDataInAttributeList(1, 2, textureCoords);
+		storeDataInAttributeList(2, 3, normals);
 		unbindVAO();
 		
 		return new RawModel(vaoID, indices.length);
