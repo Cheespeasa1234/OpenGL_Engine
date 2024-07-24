@@ -41,4 +41,8 @@ public class Block {
 		return this.blockId == other.blockId && this.properties == other.properties;
 	}
 	
+	public static boolean isTransparent(Block block) {
+		return block.getBlockId() == BlockInformation.BLOCKID_AIR;
+	}
+	
 }

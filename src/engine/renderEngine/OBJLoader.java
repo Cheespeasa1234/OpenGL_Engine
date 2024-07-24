@@ -5,14 +5,54 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import engine.models.ModelPoint;
 import engine.models.RawModel;
 
 public class OBJLoader {
+	
+	public static RawModel loadObjModel(ModelPoint[] modelPoints, int[] indices, Loader loader) {
+		
+		float[] vertices = new float[modelPoints.length * 3];
+		float[] textures = new float[modelPoints.length * 2];
+		float[] normals = new float[modelPoints.length * 3];
+		
+		
+		for (int i = 0; i < modelPoints.length; i++) {
+			ModelPoint point = modelPoints[i];
+			vertices[i * 3] = point.vertexX;
+			vertices[i * 3 + 1] = point.vertexY;
+			vertices[i * 3 + 2] = point.vertexZ;
+			
+			textures[i * 2] = point.textureX;
+			textures[i * 2 + 1] = point.textureY;
+			
+			normals[i * 3] = point.normalX;
+			normals[i * 3 + 1] = point.normalY;
+			normals[i * 3 + 2] = point.normalZ;
+		}
+		
+//		System.out.println("VERTICES: ");
+//		for (int i = 0; i < vertices.length; i += 3)
+//			System.out.println("\t" + vertices[i] + "," + vertices[i + 1] + "," + vertices[i + 2]);
+//		System.out.println("\nTEXTURES: ");
+//		for (int i = 0; i < textures.length; i += 2)
+//			System.out.println("\t" + textures[i] + "," + textures[i + 1]);
+//		System.out.println("\nNORMALS: ");
+//		for (int i = 0; i < normals.length; i += 3)
+//			System.out.println("\t" + normals[i] + "," + normals[i + 1] + "," + normals[i + 2]);
+		return loadObjModel(vertices, textures, normals, indices, loader);
+		
+	}
+	
+	public static RawModel loadObjModel(float[] verticesArray, float[] texturesArray, float[] normalsArray, int[] indicesArray, Loader loader) {
+		return loader.loadToVAO(verticesArray, texturesArray, normalsArray, indicesArray);
+	}
 
 	public static RawModel loadObjModel(String fileName, Loader loader) {
 		FileReader fr = null;

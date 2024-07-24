@@ -10,7 +10,8 @@ import org.lwjgl.util.vector.Matrix4f;
 import engine.entities.Entity;
 import engine.models.RawModel;
 import engine.models.TexturedModel;
-import engine.shaders.StaticShader;
+import engine.shaders.ShaderProgram;
+import engine.shaders.staticShader.StaticShader;
 
 public class Renderer {
 	
@@ -20,11 +21,14 @@ public class Renderer {
 	
 	private Matrix4f projectionMatrix;
 	
-	public Renderer(StaticShader shader) {
+	public Renderer(StaticShader... shaders) {
 		createProjectionMatrix();
-		shader.start();
-		shader.loadProjectionMatrix(projectionMatrix);
-		shader.stop();
+		
+		for (StaticShader shader: shaders) {
+			shader.start();
+			shader.loadProjectionMatrix(projectionMatrix);
+			shader.stop();
+		}
 	}
 
 	public void prepare() {

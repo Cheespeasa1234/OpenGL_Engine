@@ -17,8 +17,17 @@ public abstract class ShaderProgram {
 	private int vertexShaderID;
 	private int fragmentShaderID;
 	
+	/**
+	 * 
+	 */
 	private static FloatBuffer matrixBuffer = BufferUtils.createFloatBuffer(16);
 	
+	/**
+	 * Initialize a shader program, and link it with openGL. 
+	 * It then binds the attributes and sets up uniforms.
+	 * @param vertexFile The project-relative vertex shader file location
+	 * @param fragmentFile The project-relative fragment shader file location
+	 */
 	public ShaderProgram(String vertexFile, String fragmentFile) {
 		vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
 		fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
@@ -32,8 +41,16 @@ public abstract class ShaderProgram {
 		getAllUniformLocations();
 	}
 	
+	/**
+	 * Runs when attributes are bound, meant for setting uniform locations to be managed.
+	 */
 	protected abstract void getAllUniformLocations();
 	
+	/**
+	 * Returns the uniform location (for other uses) of a given uniform in this shader program.
+	 * @param uniformName The string name of the uniform
+	 * @return The location of the given uniform
+	 */
 	protected int getUniformLocation(String uniformName) {
 		return GL20.glGetUniformLocation(programID, uniformName);
 	}
@@ -46,6 +63,9 @@ public abstract class ShaderProgram {
 		GL20.glUseProgram(0);
 	}
 	
+	/**
+	 * Stops this program, deletes shaders and this program, and frees memory.
+	 */
 	public void cleanUp() {
 		stop();
 		GL20.glDetachShader(programID, vertexShaderID);
@@ -55,7 +75,17 @@ public abstract class ShaderProgram {
 		GL20.glDeleteProgram(programID);
 	}
 	
+	/**
+	 * Bind the indices of named VAOs for the vertex shader parameters.
+	 * For example, implement this by putting `super.bindAttribute(0, "position")`
+	 */
 	protected abstract void bindAttributes();
+	
+	protected void bindAttributeList(String... attributeNames) {
+		for (int i = 0; i < attributeNames.length; i++) {
+			this.bindAttribute(i, attributeNames[i]);
+		}
+	}
 	
 	protected void bindAttribute(int attribute, String variableName) {
 		GL20.glBindAttribLocation(programID, attribute, variableName);
@@ -105,6 +135,10 @@ public abstract class ShaderProgram {
 		}
 		
 		return shaderID;
+	}
+	
+	@Override public String toString() {
+		return "vert:" + this.vertexShaderID + " frag:" + this.fragmentShaderID;
 	}
 	
 }

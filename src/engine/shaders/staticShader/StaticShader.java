@@ -1,13 +1,11 @@
-package engine.shaders;
+package engine.shaders.staticShader;
 
 import org.lwjgl.util.vector.Matrix4f;
 
 import engine.entities.Light;
+import engine.shaders.ShaderProgram;
 
 public class StaticShader extends ShaderProgram {
-
-	private static final String VERTEX_FILE = "src/engine/shaders/vertexShader.vert";
-	private static final String FRAGMENT_FILE = "src/engine/shaders/fragmentShader.frag";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
@@ -15,13 +13,18 @@ public class StaticShader extends ShaderProgram {
 	private int location_lightPosition;
 	private int location_lightColor;
 	
-	public StaticShader() {
-		super(VERTEX_FILE, FRAGMENT_FILE);
+	public static final String vertexFile = "src/engine/shaders/staticShader/vertexShader.vert";
+	public static final String fragmentFile = "src/engine/shaders/staticShader/fragmentShader.frag";
+	
+	public StaticShader(String vertexFile, String fragmentFile) {
+		super(vertexFile, fragmentFile);
+		System.out.println("Using " + vertexFile + " and " + fragmentFile);
 	}
 	
-	/**
-	 * Links the VBO index of any VAO to variables in a texture
-	 */
+	public static StaticShader init() {
+		return new StaticShader(vertexFile, fragmentFile);
+	}
+	
 	@Override protected void bindAttributes() {
 		super.bindAttribute(0, "position");
 		super.bindAttribute(1, "textureCoords");

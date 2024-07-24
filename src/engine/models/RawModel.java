@@ -1,5 +1,8 @@
 package engine.models;
 
+/**
+ * Stores the VAO id and vertex count reserved for a model.
+ */
 public class RawModel {
 	
 	private int vaoID;
