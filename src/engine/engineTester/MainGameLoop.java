@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import engine.entities.Camera;
@@ -102,11 +103,15 @@ public class MainGameLoop {
 		Mesh[] highlightedMeshes = Arrays.stream(chunks)
 			.map(chunk -> chunk.getHighlightedMesh())
 			.toArray(Mesh[]::new);
+		Mesh[] chunkBorderMeshes = Arrays.stream(chunks)
+			.map(chunk -> chunk.getChunkBorderMesh())
+			.toArray(Mesh[]::new);
 		endTimer("meshing");
 		
 		startTimer("Turned to entities in ", "entities");
 		Entity[] normalChunks = prepareToRenderMeshes(meshes, loader, texture);
 		Entity[] highlightedChunks = prepareToRenderMeshes(highlightedMeshes, loader, texture);
+		Entity[] chunkBorders = prepareToRenderMeshes(chunkBorderMeshes, loader, texture);
 		endTimer("entities");
 		
 		Light light = new Light(new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
@@ -119,6 +124,7 @@ public class MainGameLoop {
 			// game logic
 //			entity.increaseRotation(0.5f, 0.5f, 0f);
 			camera.move();
+			Matrix4f viewMatrix = MathUtils.createViewMatrix(camera);
 			
 			boolean rDown = Keyboard.isKeyDown(Keyboard.KEY_R);
 			if (!rDown && rDownPrev) {
@@ -128,27 +134,33 @@ public class MainGameLoop {
 			
 			// prepare to render
 			renderer.prepare();
-			
+
+			// render
+			// SHADER 1
 			shader.start();
 			shader.loadLight(light);
-			shader.loadViewMatrix(MathUtils.createViewMatrix(camera));
+			shader.loadViewMatrix(viewMatrix);
+			if (renderMode) {
+				
+				Arrays.stream(normalChunks)
+					.forEach(chunk -> renderer.render(chunk, shader));
+			}
+			shader.stop();
 			
 			borderShader.start();
 			borderShader.loadLight(light);
-			borderShader.loadViewMatrix(MathUtils.createViewMatrix(camera));
-
-			// render
-			if (renderMode) {
-				Arrays.stream(normalChunks)
-					.forEach(chunk -> renderer.render(chunk, shader));
-			} else {
+			borderShader.loadViewMatrix(viewMatrix);
+			if (!renderMode) {
+				
 				Arrays.stream(highlightedChunks)
-					.forEach(chunk -> renderer.render(chunk, borderShader));				
+					.forEach(chunk -> renderer.render(chunk, borderShader));
+				
 			}
 			
-			
-			shader.stop();
+			Arrays.stream(chunkBorders)
+				.forEach(chunkBorder -> renderer.render(chunkBorder, borderShader));
 			borderShader.stop();
+			
 			DisplayManager.updateDisplay();
 		}
 		

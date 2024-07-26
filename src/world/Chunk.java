@@ -63,87 +63,36 @@ public class Chunk {
 		return new int[] {x, y, z};
 	}
 	
+	public int getIndexFromCoords(int[] coords) {
+		return coords[0] + (coords[1] * HEIGHT) + (coords[2] * SIZE);
+	}
+	
 	public Block getBlock(int x, int y, int z) {
 	    if (x < 0 || y < 0 || z < 0 || x >= SIZE || y >= HEIGHT || z >= SIZE) {
 	        return new Block(Block.BlockInformation.BLOCKID_AIR, Block.BlockInformation.PROPERTIES_NONE);
 	    }
 
-	    int position = x + SIZE * (z + y * SIZE);
+	    int position = getIndexFromCoords(new int[] {x, y, z});
 	    int paletteIndex = blocks[position];
 	    return blockPalette.get(paletteIndex);
 	}
 	
 	public float scale = 0.15f;
 	
-	public Mesh frontFaceVertices(float x, float y, float z) {
-		return new Mesh(new ModelPoint[] {
-			new ModelPoint(-scale+x,-scale+y,scale+z,0,0,0,0,1),  // 0
-		    new ModelPoint(scale+x,-scale+y,scale+z,1,0,0,0,1),  // 1
-		    new ModelPoint(scale+x,scale+y,scale+z,1,1,0,0,1),  // 2
-		    new ModelPoint(-scale+x,scale+y,scale+z,0,1,0,0,1)   // 3
-		}, new Integer[] {0, 1, 2, 2, 3, 0});
-	}
 	
-	public Mesh backFaceVertices(float x, float y, float z) {
-		return new Mesh(new ModelPoint[] {
-			new ModelPoint(-scale+x,-scale+y,-scale+z,0,0,0,0,-1),  // 0
-		    new ModelPoint(scale+x,-scale+y,-scale+z,1,0,0,0,-1),  // 1
-		    new ModelPoint(scale+x,scale+y,-scale+z,1,1,0,0,-1),  // 2
-		    new ModelPoint(-scale+x,scale+y,-scale+z,0,1,0,0,-1)   // 3
-		}, new Integer[] {0, 1, 2, 2, 3, 0});
-	}
-	
-	public Mesh leftFaceVertices(float x, float y, float z) {
-		return new Mesh(new ModelPoint[] {
-			new ModelPoint(-scale+x,-scale+y,-scale+z,0,0,-1,0,0),  // 0
-		    new ModelPoint(-scale+x,-scale+y,scale+z,1,0,-1,0,0),  // 1
-		    new ModelPoint(-scale+x,scale+y,scale+z,1,1,-1,0,0),  // 2
-		    new ModelPoint(-scale+x,scale+y,-scale+z,0,1,-1,0,0)   // 3
-		}, new Integer[] {0, 1, 2, 2, 3, 0});
-	}
-	
-	public Mesh rightFaceVertices(float x, float y, float z) {
-		return new Mesh(new ModelPoint[] {
-			new ModelPoint(scale+x,-scale+y,-scale+z,0,0,1,0,0),  // 0
-		    new ModelPoint(scale+x,-scale+y,scale+z,1,0,1,0,0),  // 1
-		    new ModelPoint(scale+x,scale+y,scale+z,1,1,1,0,0),  // 2
-		    new ModelPoint(scale+x,scale+y,-scale+z,0,1,1,0,0)   // 3
-		}, new Integer[] {0, 1, 2, 2, 3, 0});
-	}
-	
-	public Mesh topFaceVertices(float x, float y, float z) {
-		return new Mesh(new ModelPoint[] {
-			new ModelPoint(-scale+x,scale+y,-scale+z,0,0,0,1,0),  // 0
-		    new ModelPoint(scale+x,scale+y,-scale+z,1,0,0,1,0),  // 1
-		    new ModelPoint(scale+x,scale+y,scale+z,1,1,0,1,0),  // 2
-		    new ModelPoint(-scale+x,scale+y,scale+z,0,1,0,1,0)   // 3
-		}, new Integer[] {0, 1, 2, 2, 3, 0});
-	}
-	
-	public Mesh bottomFaceVertices(float x, float y, float z) {
-		return new Mesh(new ModelPoint[] {
-			new ModelPoint(-scale+x,-scale+y,-scale+z,0,0,0,-1,0),  // 0
-		    new ModelPoint(scale+x,-scale+y,-scale+z,1,0,0,-1,0),  // 1
-		    new ModelPoint(scale+x,-scale+y,scale+z,1,1,0,-1,0),  // 2
-		    new ModelPoint(-scale+x,-scale+y,scale+z,0,1,0,-1,0)   // 3
-		}, new Integer[] {0, 1, 2, 2, 3, 0});
-	}
 	
 	public boolean blockIsVisible(int x, int y, int z) {
-		if (x == 0 || x == SIZE || y == 0 || y == HEIGHT || z == 0 || z == SIZE) {
-			return true;
-		}
+		System.out.println(x + "," + y + "," + z);
+//		if (x == 0 || x == SIZE - 1 || y == 0 || y == HEIGHT - 1 || z == 0 || z == SIZE - 1) {
+//			return true;
+//		}
 		
-		if (
-			Block.isTransparent(this.getBlock(x + 1, y, z)) ||
-			Block.isTransparent(this.getBlock(x - 1, y, z)) ||
-			Block.isTransparent(this.getBlock(x, y + 1, z)) ||
-			Block.isTransparent(this.getBlock(x, y - 1, z)) ||
-			Block.isTransparent(this.getBlock(x, y, z + 1)) ||
-			Block.isTransparent(this.getBlock(x, y, z - 1))) 
-		{
-			return true;
-		}
+		if (Block.isTransparent(getBlock(x+1,y,z))) return true;
+		if (Block.isTransparent(getBlock(x-1,y,z))) return true;
+		if (Block.isTransparent(getBlock(x,y+1,z))) return true;
+		if (Block.isTransparent(getBlock(x,y-1,z))) return true;
+		if (Block.isTransparent(getBlock(x,y,z+1))) return true;
+		if (Block.isTransparent(getBlock(x,y,z-1))) return true;
 		
 		return false;
 	}
@@ -161,26 +110,22 @@ public class Chunk {
 	        		continue;
 	        	}
 	        	
-	        	Mesh frontFace = frontFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            Mesh backFace = backFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            Mesh leftFace = leftFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            Mesh rightFace = rightFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            Mesh topFace = topFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            Mesh bottomFace = bottomFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            
-	            Mesh cube = new Mesh();
-                cube.appendMesh(frontFace);
-                cube.appendMesh(backFace);
-                cube.appendMesh(leftFace);
-                cube.appendMesh(rightFace);
-                cube.appendMesh(topFace);
-                cube.appendMesh(bottomFace);
-	            
-	            chunkMesh.appendMesh(cube);
+	        	chunkMesh.appendMesh(Mesh.getCube(coords[0], coords[1], coords[2], scale));
 	        }
 	    }
 	    
-	    return chunkMesh.transform(chunkX * scale * SIZE, 0, chunkZ * scale * SIZE);
+	    float chunkXTransform = ((float) chunkX) * ((float) SIZE) * scale * 4.0f;
+	    float chunkZTransform = ((float) chunkZ) * ((float) SIZE) * scale * 4.0f;
+	    chunkMesh = chunkMesh.transform(chunkXTransform, 0, chunkZTransform);
+	    return chunkMesh;
+	}
+	
+	public Mesh getChunkBorderMesh() {
+		float chunkXTransform = ((float) chunkX) * ((float) SIZE) * scale * 4.0f;
+		float chunkZTransform = ((float) chunkZ) * ((float) SIZE) * scale * 4.0f;
+		Mesh chunkBorderMesh = Mesh.getPrism(0, 0, 0, scale * SIZE, scale * HEIGHT, scale * SIZE);
+		chunkBorderMesh = chunkBorderMesh.transform(chunkXTransform, 0, chunkZTransform);
+		return chunkBorderMesh;
 	}
 	
 	public Mesh getMesh() {
@@ -193,26 +138,14 @@ public class Chunk {
 	            
 	        	int[] coords = getCoordsFromIndex(i);
 	        	
-	        	Mesh frontFace = frontFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            Mesh backFace = backFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            Mesh leftFace = leftFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            Mesh rightFace = rightFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            Mesh topFace = topFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            Mesh bottomFace = bottomFaceVertices(coords[0] * scale * 2, coords[1] * scale * 2, coords[2] * scale * 2);
-	            
-	            Mesh cube = new Mesh();
-                cube.appendMesh(frontFace);
-                cube.appendMesh(backFace);
-                cube.appendMesh(leftFace);
-                cube.appendMesh(rightFace);
-                cube.appendMesh(topFace);
-                cube.appendMesh(bottomFace);
-	            
-	            chunkMesh.appendMesh(cube);
+                chunkMesh.appendMesh(Mesh.getCube(coords[0], coords[1], coords[2], scale));
 	        }
 	    }
 	    
-	    return chunkMesh.transform(chunkX * scale * SIZE, 0, chunkZ * scale * SIZE);
+	    float chunkXTransform = ((float) chunkX) * ((float) SIZE) * scale * 4.0f;
+	    float chunkZTransform = ((float) chunkZ) * ((float) SIZE) * scale * 4.0f;
+	    chunkMesh = chunkMesh.transform(chunkXTransform, 0, chunkZTransform);
+	    return chunkMesh;
 	}
 
 
