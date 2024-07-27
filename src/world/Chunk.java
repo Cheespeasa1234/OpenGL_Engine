@@ -82,7 +82,7 @@ public class Chunk {
 	
 	
 	public boolean blockIsVisible(int x, int y, int z) {
-		System.out.println(x + "," + y + "," + z);
+//		System.out.println(x + "," + y + "," + z);
 //		if (x == 0 || x == SIZE - 1 || y == 0 || y == HEIGHT - 1 || z == 0 || z == SIZE - 1) {
 //			return true;
 //		}

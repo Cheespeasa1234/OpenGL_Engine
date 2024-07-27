@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 public abstract class ShaderProgram {
 	
@@ -95,8 +96,12 @@ public abstract class ShaderProgram {
 		GL20.glUniform1f(location, value);
 	}
 	
-	protected void loadVectorToUniform(Vector3f vector, int location) {
+	protected void loadVector3fToUniform(Vector3f vector, int location) {
 		GL20.glUniform3f(location, vector.x, vector.y, vector.z);
+	}
+	
+	protected void loadVector4fToUniform(Vector4f vector, int location) {
+		GL20.glUniform4f(location, vector.w, vector.x, vector.y, vector.z);
 	}
 	
 	protected void loadBooleanToUniform(boolean bool, int location) {

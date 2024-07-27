@@ -52,8 +52,8 @@ public class StaticShader extends ShaderProgram {
 	}
 	
 	public void loadLight(Light light) {
-		super.loadVectorToUniform(light.getPosition(), location_lightPosition);
-		super.loadVectorToUniform(light.getColor(), location_lightColor);
+		super.loadVector3fToUniform(light.getPosition(), location_lightPosition);
+		super.loadVector3fToUniform(light.getColor(), location_lightColor);
 	}
 
 }

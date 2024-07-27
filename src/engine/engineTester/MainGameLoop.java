@@ -7,6 +7,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import engine.entities.Camera;
 import engine.entities.Entity;
@@ -52,6 +53,28 @@ public class MainGameLoop {
 		
 		return entities;
 	}
+	
+	private static Vector4f cycle(long tick) {
+	    float hue = (tick % 360) / 360.0f; // Cycle hue based on tick
+	    float saturation = 1.0f;           // Full saturation
+	    float brightness = 1.0f;           // Full brightness
+	    float alpha = 1.0f;                // Full alpha
+	    
+	    // Convert HSB to RGB
+	    int rgb = java.awt.Color.HSBtoRGB(hue, saturation, brightness);
+	    
+	    // Extract RGB components
+	    float red = ((rgb >> 16) & 0xFF) / 255.0f;
+	    float green = ((rgb >> 8) & 0xFF) / 255.0f;
+	    float blue = (rgb & 0xFF) / 255.0f;
+	    
+	    // Return as Vector4f
+	    return new Vector4f(red, green, blue, alpha);
+	}
+	
+	private static String formatVector4f(Vector4f vector) {
+	    return String.format("X: %4.3f Y: %4.3f Z: %4.3f W: %4.3f", vector.w, vector.x, vector.y, vector.z);
+	}
 
 	public static void main(String[] args) {
 		
@@ -71,7 +94,7 @@ public class MainGameLoop {
 		PerlinNoise noise = new PerlinNoise(10);
 		
 		// Generate the world
-		int size = 2;
+		int size = 4;
 		Chunk[] chunks = new Chunk[size * size];
 		startTimer("Generated " + chunks.length + " chunks in ", "generator");
 		for (int x = 0; x < size; x++) {
@@ -119,6 +142,7 @@ public class MainGameLoop {
 		
 		boolean renderMode = true;
 		boolean rDownPrev = false;
+		long framesRendered = 0;
 		
 		while (!Display.isCloseRequested()) {
 			// game logic
@@ -150,6 +174,9 @@ public class MainGameLoop {
 			borderShader.start();
 			borderShader.loadLight(light);
 			borderShader.loadViewMatrix(viewMatrix);
+			Vector4f borderColor = cycle(framesRendered);
+			System.out.println(formatVector4f(borderColor));
+			borderShader.loadBorderColor(borderColor);
 			if (!renderMode) {
 				
 				Arrays.stream(highlightedChunks)
@@ -162,6 +189,8 @@ public class MainGameLoop {
 			borderShader.stop();
 			
 			DisplayManager.updateDisplay();
+			
+			framesRendered++;
 		}
 		
 		shader.cleanUp();
